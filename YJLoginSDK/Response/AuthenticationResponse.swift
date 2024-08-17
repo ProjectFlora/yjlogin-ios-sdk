@@ -7,8 +7,8 @@
 
 import Foundation
 
-fileprivate func parseQueries(url: URL, flow: Flow) throws -> [String: String?] {
-    var queries: [String:String?] = [:]
+private func parseQueries(url: URL, flow: Flow) throws -> [String: String?] {
+    var queries: [String: String?] = [:]
     switch flow {
     case .authenticationCode:
         guard let urlComponent = URLComponents(formUrlencodedString: url.absoluteString) else {
