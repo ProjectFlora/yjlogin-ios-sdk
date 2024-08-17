@@ -57,8 +57,8 @@ internal struct AuthenticationResponse {
         var error: String?
         var errorDescription: String?
         var errorCode: Int?
-
-        let queries = try! parseQueries(url: url, flow: flow)
+        
+        let queries = try parseQueries(url: url, flow: flow)
 
         for item in queries {
             switch item.key {

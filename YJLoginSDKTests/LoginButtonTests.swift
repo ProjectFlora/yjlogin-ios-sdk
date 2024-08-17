@@ -15,7 +15,7 @@ class LoginButtonTests: XCTestCase {
 
     func test_login_success() {
         let vc = ViewController()
-        vc.process = StubProcess(result: .success(LoginResult(authorizationCode: "code", state: "state")))
+        vc.process = StubProcess(result: .success(AuthorizationCodeFlowLoginResult(authorizationCode: "code", state: "state")))
         vc.viewDidLoad()
         vc.button.sendActions(for: .touchUpInside)
         XCTAssertEqual(vc.startCount, 1)

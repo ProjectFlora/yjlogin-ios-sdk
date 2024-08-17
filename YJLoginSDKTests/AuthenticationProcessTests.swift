@@ -16,13 +16,17 @@ class AuthenticationProcessTests: XCTestCase {
     func test_normal() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=state&code=code")!))
 
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
 
         process?.onFinish = { result in
             if case .success(let result) = result {
+                guard let result = result as? AuthorizationCodeFlowLoginResult else {
+                    XCTFail("Test failed.")
+                    return
+                }
                 XCTAssertEqual(result.authorizationCode, "code")
                 XCTAssertEqual(result.state, "state")
                 expect.fulfill()
@@ -39,7 +43,7 @@ class AuthenticationProcessTests: XCTestCase {
         error = ASWebAuthenticationSessionError.init(.canceledLogin)
 
         let stub = StubUserAgent(result: .failure(error))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -57,7 +61,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_user_cancel_button() {
         let stub = StubUserAgent(result: .success(URL(string: "scheme:/?")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -75,7 +79,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_system_error() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=state&error=server_error&error_description=hogehoge&error_code=1000")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -96,7 +100,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_response_failed_invalid_state() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=invalid_state&code=code")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -114,7 +118,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_response_failed_missing_state() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?code=code")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -132,7 +136,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_response_failed_unnecessary_state() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?code=code&state=state")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: nil)
 
         let expect = self.expectation(description: self.name)
@@ -150,7 +154,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_response_failed_undefined() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=state&error=unexpected_error&error_description=hogehoge&error_code=1000")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -171,7 +175,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_response_failed_missing_authorization_code() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=state")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -189,7 +193,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_user_interaction_required_login_required() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=state&error=login_required&error_description=hogehoge&error_code=1000")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -210,7 +214,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_user_interaction_required_consent_required() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=state&error=consent_required&error_description=hogehoge&error_code=1000")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -231,7 +235,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_user_interaction_required_interaction_required() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=state&error=interaction_required&error_description=hogehoge&error_code=1000")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -252,7 +256,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_request_failed_access_denied() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=state&error=access_denied&error_description=hogehoge&error_code=1000")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -273,7 +277,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_request_failed_invalid_scope() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=state&error=invalid_scope&error_description=hogehoge&error_code=1000")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -294,7 +298,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_request_failed_invalid_request() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=state&error=invalid_request&error_description=hogehoge&error_code=1000")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -315,7 +319,7 @@ class AuthenticationProcessTests: XCTestCase {
 
     func test_request_failed_unsupported_response_type() {
         let stub = StubUserAgent(result: .success(URL(string: "test:/?state=state&error=unsupported_response_type&error_description=hogehoge+hogehoge&error_code=1000")!))
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -338,7 +342,7 @@ class AuthenticationProcessTests: XCTestCase {
         let expectedError = NSError(domain: "test", code: 0, userInfo: nil)
         let stub = StubUserAgent(result: .failure(expectedError))
 
-        process = AuthenticationProcess(ua: stub)
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
 
         let expect = self.expectation(description: self.name)
@@ -360,54 +364,54 @@ class AuthenticationProcessTests: XCTestCase {
     }
 
     func test_resume_success() {
-        process = AuthenticationProcess(viewController: nil)
+        process = AuthenticationProcess(viewController: nil, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
         process?.start(request: request)
         XCTAssertTrue(process!.resume(url: URL(string: "scheme:/?")!))
     }
 
     func test_resume_request_null() {
-        process = AuthenticationProcess(viewController: nil)
+        process = AuthenticationProcess(viewController: nil, responseTypes: [.code])
         XCTAssertFalse(process!.resume(url: URL(string: "scheme:/")!))
     }
 
     func test_resume_invalid_redirect_uri_scheme() {
-        process = AuthenticationProcess(viewController: nil)
+        process = AuthenticationProcess(viewController: nil, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
         process?.start(request: request)
         XCTAssertFalse(process!.resume(url: URL(string: "invalidscheme:/")!))
     }
 
     func test_resume_invalid_redirect_path() {
-        process = AuthenticationProcess(viewController: nil)
+        process = AuthenticationProcess(viewController: nil, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme://path?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
         process?.start(request: request)
         XCTAssertFalse(process!.resume(url: URL(string: "scheme://invalidpath")!))
     }
 
     func test_resume_invalid_redirect_user() {
-        process = AuthenticationProcess(viewController: nil)
+        process = AuthenticationProcess(viewController: nil, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "https://user:passwd@host/path?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
         process?.start(request: request)
         XCTAssertFalse(process!.resume(url: URL(string: "https://invaliduser:passwd@host/path")!))
     }
 
     func test_resume_invalid_redirect_password() {
-        process = AuthenticationProcess(viewController: nil)
+        process = AuthenticationProcess(viewController: nil, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "https://user:passwd@host/path?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
         process?.start(request: request)
         XCTAssertFalse(process!.resume(url: URL(string: "https://user:invalidpasswd@host/path")!))
     }
 
     func test_resume_invalid_redirect_port() {
-        process = AuthenticationProcess(viewController: nil)
+        process = AuthenticationProcess(viewController: nil, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "https://host/path:8080?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
         process?.start(request: request)
         XCTAssertFalse(process!.resume(url: URL(string: "https://host/path:0000")!))
     }
 
     func test_resume_invalid_redirect_host() {
-        process = AuthenticationProcess(viewController: nil)
+        process = AuthenticationProcess(viewController: nil, responseTypes: [.code])
         let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "https://host/path:8080?")!, responseTypes: [.code], scopes: [.openid, .profile], state: "state")
         process?.start(request: request)
         XCTAssertFalse(process!.resume(url: URL(string: "https://invalidhost/path:8080")!))

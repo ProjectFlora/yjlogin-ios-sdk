@@ -14,11 +14,14 @@ class LoginManagetTests: XCTestCase {
     }
 
     func test_login_success() {
-        let stubProcess = StubProcess(result: .success(LoginResult(authorizationCode: "abc", state: nil)))
+        let stubProcess = StubProcess(result: .success(AuthorizationCodeFlowLoginResult(authorizationCode: "abc", state: nil)))
         let expect = self.expectation(description: self.name)
 
         LoginManager.shared.login(scopes: [.openid], nonce: "nonce", codeChallenge: "code_challenge", process: stubProcess) { result in
-            let result = try! result.get()
+            guard let result = try? result.get() as? AuthorizationCodeFlowLoginResult else {
+                XCTFail("The result should be an instance of AuthorizationCodeFlowLoginResult class.")
+                return
+            }
             XCTAssertEqual(result.authorizationCode, "abc")
             expect.fulfill()
         }
@@ -27,11 +30,14 @@ class LoginManagetTests: XCTestCase {
     }
 
     func test_login_optional_parameter_success() {
-        let stubProcess = StubProcess(result: .success(LoginResult(authorizationCode: "abc", state: "state")))
+        let stubProcess = StubProcess(result: .success(AuthorizationCodeFlowLoginResult(authorizationCode: "abc", state: "state")))
         let expect = self.expectation(description: self.name)
         let optionalParameters = OptionalParameters(bail: true)
         LoginManager.shared.login(scopes: [.openid], nonce: "nonce", codeChallenge: "code_challenge", process: stubProcess, optionalParameters: optionalParameters) { result in
-            let result = try! result.get()
+            guard let result = try? result.get() as? AuthorizationCodeFlowLoginResult else {
+                XCTFail("The result should be an instance of AuthorizationCodeFlowLoginResult class.")
+                return
+            }
             XCTAssertEqual(result.authorizationCode, "abc")
             XCTAssertEqual(result.state, "state")
             expect.fulfill()
@@ -56,14 +62,17 @@ class LoginManagetTests: XCTestCase {
 
     func test_login_concurrent_with_disable_universal_links() {
         LoginManager.shared.setEnableUniversalLinks(enableUniversalLinks: false)
-        let stubProcess = StubProcess(result: .success(LoginResult(authorizationCode: "abc", state: nil)))
+        let stubProcess = StubProcess(result: .success(AuthorizationCodeFlowLoginResult(authorizationCode: "abc", state: nil)))
         let expect = self.expectation(description: self.name)
-        let stubProcess2 = StubProcess(result: .success(LoginResult(authorizationCode: "abc", state: nil)))
+        let stubProcess2 = StubProcess(result: .success(AuthorizationCodeFlowLoginResult(authorizationCode: "abc", state: nil)))
         let expect2 = self.expectation(description: self.name)
 
         DispatchQueue.global().async {
             LoginManager.shared.login(scopes: [.openid], nonce: "nonce", codeChallenge: "code_challenge", process: stubProcess) { result in
-                let result = try! result.get()
+                guard let result = try? result.get() as? AuthorizationCodeFlowLoginResult else {
+                    XCTFail("The result should be an instance of AuthorizationCodeFlowLoginResult class.")
+                    return
+                }
                 XCTAssertEqual(result.authorizationCode, "abc")
                 expect.fulfill()
             }
@@ -86,14 +95,17 @@ class LoginManagetTests: XCTestCase {
 
     func test_login_concurrent_with_enable_universal_links() {
         LoginManager.shared.setEnableUniversalLinks(enableUniversalLinks: true)
-        let stubProcess = StubProcess(result: .success(LoginResult(authorizationCode: "abc", state: nil)))
+        let stubProcess = StubProcess(result: .success(AuthorizationCodeFlowLoginResult(authorizationCode: "abc", state: nil)))
         let expect = self.expectation(description: self.name)
-        let stubProcess2 = StubProcess(result: .success(LoginResult(authorizationCode: "abc", state: nil)))
+        let stubProcess2 = StubProcess(result: .success(AuthorizationCodeFlowLoginResult(authorizationCode: "abc", state: nil)))
         let expect2 = self.expectation(description: self.name)
 
         DispatchQueue.global().async {
             LoginManager.shared.login(scopes: [.openid], nonce: "nonce", codeChallenge: "code_challenge", process: stubProcess) { result in
-                let result = try! result.get()
+                guard let result = try? result.get() as? AuthorizationCodeFlowLoginResult else {
+                    XCTFail("The result should be an instance of AuthorizationCodeFlowLoginResult class.")
+                    return
+                }
                 XCTAssertEqual(result.authorizationCode, "abc")
                 expect.fulfill()
             }
@@ -103,7 +115,10 @@ class LoginManagetTests: XCTestCase {
 
         DispatchQueue.global().async {
             LoginManager.shared.login(scopes: [.openid], nonce: "nonce", codeChallenge: "code_challenge", process: stubProcess2) { result in
-                let result = try! result.get()
+                guard let result = try? result.get() as? AuthorizationCodeFlowLoginResult else {
+                    XCTFail("The result should be an instance of AuthorizationCodeFlowLoginResult class.")
+                    return
+                }
                 XCTAssertEqual(result.authorizationCode, "abc")
                 expect2.fulfill()
             }
