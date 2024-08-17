@@ -58,7 +58,7 @@ public class LoginManager {
     /// - Parameter scopes: 要求する`Scope`の配列。`.openid`は必須。
     /// - Parameter nonce: リプレイアタック対策のパラメーター。
     /// - Parameter codeChallenge: PKCEのパラメーター。
-    /// - Parameter state: CSRF対策のパラメーター。
+    /// - Parameter state: CSRF対策のパラメーター。デフォルトはランダムの文字列。
     /// - Parameter responseTypes: レスポンスタイプ。デフォルトは`[.code]`。
     /// - Parameter optionalParameters: 認可リクエスト時に指定する任意パラメーター。
     /// - Parameter viewController: ログイン画面を表示するViewController。nilの場合は最前面のViewControllerにログイン画面を表示する。

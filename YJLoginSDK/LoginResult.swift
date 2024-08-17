@@ -5,11 +5,16 @@
 //  © 2023 LY Corporation. All rights reserved.
 //
 
-public protocol LoginResult {}
+/// 認可リクエストが成功した結果。
+public protocol LoginResult {
+    /// 認証フロー。
+    var flow: Flow { get }
+}
 
 /// 認可リクエストが成功した結果。(Authorization Codeフロー)
 public struct AuthorizationCodeFlowLoginResult: LoginResult {
-    // MARK: Public property
+    public var flow: Flow { return .authenticationCode }
+
     /// 認可コード。
     public let authorizationCode: String
 
@@ -19,6 +24,8 @@ public struct AuthorizationCodeFlowLoginResult: LoginResult {
 
 /// 認可リクエストが成功した結果。(HybridFlow)
 public struct HyblidFlowLoginResult: LoginResult {
+    public var flow: Flow { return .hybrid }
+
     /// 認可コード。
     public let authorizationCode: String
     
@@ -37,6 +44,8 @@ public struct HyblidFlowLoginResult: LoginResult {
 
 /// 認可リクエストが成功した結果。(ImplicitFlow)
 public struct ImplicitFlowLoginResult: LoginResult {
+    public var flow: Flow { return .implicit }
+
     /// トークン種別。
     public let tokenType: String?
     

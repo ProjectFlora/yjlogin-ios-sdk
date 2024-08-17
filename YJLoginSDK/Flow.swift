@@ -8,14 +8,14 @@
 import Foundation
 
 /// コード認証フロー。
-enum Flow {
+public enum Flow {
     /// Authentication Codeフロー
     case authenticationCode
     
     /// Implicitフロー。
     case implicit
     
-    /// Hybridフロー
+    /// Hybridフロー。
     case hybrid
     
     /// `ResponseType`の配列からコード認証フローを取得する
