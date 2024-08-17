@@ -59,6 +59,7 @@ public class LoginManager {
     /// - Parameter nonce: リプレイアタック対策のパラメーター。
     /// - Parameter codeChallenge: PKCEのパラメーター。
     /// - Parameter state: CSRF対策のパラメーター。
+    /// - Parameter responseTypes: レスポンスタイプ。デフォルトは`[.code]`。
     /// - Parameter optionalParameters: 認可リクエスト時に指定する任意パラメーター。
     /// - Parameter viewController: ログイン画面を表示するViewController。nilの場合は最前面のViewControllerにログイン画面を表示する。
     /// - Parameter completion: ログインアクション完了時に実行されるクロージャー。
@@ -75,7 +76,7 @@ public class LoginManager {
         optionalParameters: OptionalParameters? = nil,
         viewController: UIViewController? = nil,
         completionHandler completion: @escaping (Result<LoginResult, LoginError>) -> Void) {
-        login(scopes: scopes, nonce: nonce, codeChallenge: codeChallenge, process: AuthenticationProcess(viewController: viewController), optionalParameters: optionalParameters, completionHandler: completion)
+            login(scopes: scopes, nonce: nonce, codeChallenge: codeChallenge, process: AuthenticationProcess(viewController: viewController, responseTypes: responseTypes), optionalParameters: optionalParameters, completionHandler: completion)
     }
 
     /// AppDelegateからアプリにログイン処理が返ってきた際に、URLの処理を制御する。

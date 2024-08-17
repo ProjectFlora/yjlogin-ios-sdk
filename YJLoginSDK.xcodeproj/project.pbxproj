@@ -12,6 +12,7 @@
 		83B51BA32ACD50EA001FD932 /* YJLoginSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B1DCE1DA22B263F2005F5703 /* YJLoginSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		83B51BA62ACD50F5001FD932 /* YJLoginSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1DCE1DA22B263F2005F5703 /* YJLoginSDK.framework */; };
 		83B51BA72ACD50F5001FD932 /* YJLoginSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B1DCE1DA22B263F2005F5703 /* YJLoginSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9D6510852C6D5D82008FEF62 /* Flow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6510842C6D5D82008FEF62 /* Flow.swift */; };
 		B10562CC2398A62D00359322 /* Data+base64url.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10562CB2398A62D00359322 /* Data+base64url.swift */; };
 		B10562CE2398C00000359322 /* SecureRandom.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10562CD2398C00000359322 /* SecureRandom.swift */; };
 		B10A5EB8230BECA600EBB294 /* LoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C8D75E22C5B713004CF30C /* LoginButton.swift */; };
@@ -99,6 +100,7 @@
 
 /* Begin PBXFileReference section */
 		636D634D2B85F855005C348D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		9D6510842C6D5D82008FEF62 /* Flow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flow.swift; sourceTree = "<group>"; };
 		B10562CB2398A62D00359322 /* Data+base64url.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+base64url.swift"; sourceTree = "<group>"; };
 		B10562CD2398C00000359322 /* SecureRandom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureRandom.swift; sourceTree = "<group>"; };
 		B10FD9F022FC33820048A4B7 /* LoginButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginButtonTests.swift; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 				B1DCE1F922B265C8005F5703 /* LoginManager.swift */,
 				B1C8D75E22C5B713004CF30C /* LoginButton.swift */,
 				B1B7D38F22FA952600D35A8B /* LoginResult.swift */,
+				9D6510842C6D5D82008FEF62 /* Flow.swift */,
 				B1EEBF2E22FD4BC1009F600D /* Constant.swift */,
 				B1DCE1DD22B263F2005F5703 /* YJLoginSDK.h */,
 				B1D5762522DC4EA500A85071 /* Assets.xcassets */,
@@ -467,6 +470,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D6510852C6D5D82008FEF62 /* Flow.swift in Sources */,
 				B10A5EB8230BECA600EBB294 /* LoginButton.swift in Sources */,
 				B1D5762422D884E100A85071 /* OptionalParameters.swift in Sources */,
 				B10562CC2398A62D00359322 /* Data+base64url.swift in Sources */,

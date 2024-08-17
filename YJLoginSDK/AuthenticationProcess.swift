@@ -23,14 +23,20 @@ internal class AuthenticationProcess: AuthenticationProcessProtocol {
     var onFinish: ((Result<LoginResult, LoginError>) -> Void)?
     weak var viewController: UIViewController?
     var enableUniversalLinks: Bool = true
+    let responseTypes: [ResponseType]
+    let flow: Flow
 
-    init(viewController: UIViewController?) {
+    init(viewController: UIViewController?, responseTypes: [ResponseType]) {
         ua = ASWebAuthenticationSessionUserAgent()
         self.viewController = viewController
+        self.responseTypes = responseTypes
+        flow = Flow(responseTypes: responseTypes)
     }
 
-    init(ua: UserAgent) {
+    init(ua: UserAgent, responseTypes: [ResponseType]) {
         self.ua = ua
+        self.responseTypes = responseTypes
+        flow = Flow(responseTypes: responseTypes)
     }
 
     private func convertLoginError(url: URL?, error: Error?) -> Result<LoginResult, LoginError> {
@@ -46,8 +52,9 @@ internal class AuthenticationProcess: AuthenticationProcessProtocol {
         }
 
         do {
-            let response = try AuthenticationResponse(url: url, validatingWith: request?.state)
-            let result = LoginResult(authorizationCode: response.authorizationCode, state: response.state)
+            let response = try AuthenticationResponse(url: url, validatingWith: request?.state, responseTypes: responseTypes)
+
+            let result = try response.loginResult()
             return .success(result)
         } catch {
             guard let responseError = error as? AuthenticationResponseError else {
@@ -58,7 +65,7 @@ internal class AuthenticationProcess: AuthenticationProcessProtocol {
             case .invalidState:
                 return .failure(.responseFailed(.invalidState))
 
-            case .userCancel, .emptyAuthorizationCode:
+            case .userCancel, .emptyAuthorizationCode, .emptyIdToken, .emptyAccessToken:
                 return .failure(.userCancel)
 
             case .undefinedError(let error, let description, let code):

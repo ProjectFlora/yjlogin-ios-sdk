@@ -113,7 +113,7 @@ public class LoginButton: UIButton {
     @objc private func login() {
         isUserInteractionEnabled = false
         delegate?.loginButtonDidStartLogin(self)
-        let process = self.process ?? AuthenticationProcess(viewController: presentingViewController)
+        let process = self.process ?? AuthenticationProcess(viewController: presentingViewController, responseTypes: [.code])
         LoginManager.shared.login(scopes: scopes, nonce: nonce, codeChallenge: codeChallenge, process: process, optionalParameters: optionalParameters) {[weak self] result in
             if let self {
                 switch result {
