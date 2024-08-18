@@ -139,7 +139,7 @@ internal struct AuthenticationResponse {
                     throw AuthenticationResponseError.emptyIdToken
                 }
             }
-            return HyblidFlowLoginResult(authorizationCode: authorizationCode, tokenType: tokenType, idToken: idToken, accessToken: accessToken, state: state)
+            return HybridFlowLoginResult(authorizationCode: authorizationCode, tokenType: tokenType, idToken: idToken, accessToken: accessToken, state: state)
         case .implicit:
             if responseTypes.firstIndex(of: .token) != nil {
                 guard accessToken != nil && tokenType != nil && expiresIn != nil else {

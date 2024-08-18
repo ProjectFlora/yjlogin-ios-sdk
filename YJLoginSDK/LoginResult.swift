@@ -23,7 +23,7 @@ public struct AuthorizationCodeFlowLoginResult: LoginResult {
 }
 
 /// 認可リクエストが成功した結果。(HybridFlow)
-public struct HyblidFlowLoginResult: LoginResult {
+public struct HybridFlowLoginResult: LoginResult {
     public var flow: Flow { return .hybrid }
 
     /// 認可コード。

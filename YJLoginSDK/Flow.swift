@@ -20,7 +20,7 @@ public enum Flow {
     
     /// `ResponseType`の配列からコード認証フローを取得する
     /// - Parameter responseTypes: `ResponseType`の配列
-    init(responseTypes: [ResponseType]) {
+    init(responseTypes: [ResponseType]) {        
         var containsCode = false
         var containsToken = false
         for responseType in responseTypes {
@@ -37,10 +37,10 @@ public enum Flow {
             self = .hybrid
         case (true, false):
             self = .authenticationCode
-        case (false, false):
+        case (false, true):
             self = .implicit
         default:
-            fatalError("responseTypes must not be empty.")
+            fatalError("[YJLoginSDK] Invalid case.")
         }
     }
 }

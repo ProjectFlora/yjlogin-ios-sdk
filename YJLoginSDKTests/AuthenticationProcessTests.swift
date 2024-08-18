@@ -23,11 +23,71 @@ class AuthenticationProcessTests: XCTestCase {
 
         process?.onFinish = { result in
             if case .success(let result) = result {
+                XCTAssertEqual(result.flow, .authenticationCode)
+                
                 guard let result = result as? AuthorizationCodeFlowLoginResult else {
                     XCTFail("Test failed.")
                     return
                 }
                 XCTAssertEqual(result.authorizationCode, "code")
+                XCTAssertEqual(result.state, "state")
+                expect.fulfill()
+            } else {
+                XCTFail("The result should be success.")
+            }
+        }
+        process?.start(request: request)
+        self.wait(for: [expect], timeout: 2.0)
+    }
+    
+    func test_normal_hybrid_flow() {
+        let stub = StubUserAgent(result: .success(URL(string: "test:/#state=state&code=code&token_type=Bearer&access_token=access_token&id_token=id_token")!))
+        
+        process = AuthenticationProcess(ua: stub, responseTypes: [.code, .idToken, .token])
+        let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/#")!, responseTypes: [.code, .idToken, .token], scopes: [.openid, .profile], state: "state")
+        
+        let expect = self.expectation(description: self.name)
+        process?.onFinish = { result in
+            if case .success(let result) = result {
+                XCTAssertEqual(result.flow, .hybrid)
+                
+                guard let result = result as? HybridFlowLoginResult else {
+                    XCTFail("Test failed.")
+                    return
+                }
+                XCTAssertEqual(result.authorizationCode, "code")
+                XCTAssertEqual(result.tokenType, "Bearer")
+                XCTAssertEqual(result.idToken, "id_token")
+                XCTAssertEqual(result.accessToken, "access_token")
+                XCTAssertEqual(result.state, "state")
+                expect.fulfill()
+            } else {
+                XCTFail("The result should be success.")
+            }
+        }
+        process?.start(request: request)
+        self.wait(for: [expect], timeout: 2.0)
+    }
+    
+    func test_normal_implicit_flow() {
+        let stub = StubUserAgent(result: .success(URL(string: "test:/#state=state&token_type=Bearer&access_token=access_token&id_token=id_token&expires_in=3600")!))
+        
+        process = AuthenticationProcess(ua: stub, responseTypes: [.idToken, .token])
+        let request = AuthenticationRequest(clientId: "client_id", codeChallenge: "code_challenge", nonce: "nonce", redirectUri: URL(string: "scheme:/#")!, responseTypes: [.idToken, .token], scopes: [.openid, .profile], state: "state")
+        
+        let expect = self.expectation(description: self.name)
+        process?.onFinish = { result in
+            if case .success(let result) = result {
+                XCTAssertEqual(result.flow, .implicit)
+
+                guard let result = result as? ImplicitFlowLoginResult else {
+                    XCTFail("Test failed.")
+                    return
+                }
+                XCTAssertEqual(result.tokenType, "Bearer")
+                XCTAssertEqual(result.idToken, "id_token")
+                XCTAssertEqual(result.accessToken, "access_token")
+                XCTAssertEqual(result.expiresIn, 3600)
                 XCTAssertEqual(result.state, "state")
                 expect.fulfill()
             } else {

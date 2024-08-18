@@ -102,6 +102,10 @@ public class LoginManager {
         process: AuthenticationProcessProtocol,
         optionalParameters: OptionalParameters? = nil,
         completionHandler completion: @escaping (Result<LoginResult, LoginError>) -> Void) {
+            
+        guard !responseTypes.isEmpty else {
+            fatalError("[YJLoginSDK] responseTypes must not be empty.")
+        }
 
         guard let configuration else {
             fatalError("[YJLoginSDK] Please call setup function before login.")
