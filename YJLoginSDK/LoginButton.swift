@@ -72,6 +72,12 @@ public class LoginButton: UIButton {
 
     /// 認可リクエストで指定するcodeChallenge。
     public var codeChallenge: String!
+    
+    /// 認可リクエストで指定するstate
+    public var expectedState: String!
+    
+    /// 認可リクエストで指定するresponseTypes
+    public var responseTypes: [ResponseType] = [.code]
 
     /// 認可リクエストで指定するその他の任意パラメーター。
     public var optionalParameters: OptionalParameters?
@@ -113,8 +119,8 @@ public class LoginButton: UIButton {
     @objc private func login() {
         isUserInteractionEnabled = false
         delegate?.loginButtonDidStartLogin(self)
-        let process = self.process ?? AuthenticationProcess(viewController: presentingViewController)
-        LoginManager.shared.login(scopes: scopes, nonce: nonce, codeChallenge: codeChallenge, process: process, optionalParameters: optionalParameters) {[weak self] result in
+        let process = self.process ?? AuthenticationProcess(viewController: presentingViewController, responseTypes: [.code])
+        LoginManager.shared.login(scopes: scopes, nonce: nonce, codeChallenge: codeChallenge, state: expectedState, responseTypes: responseTypes, process: process, optionalParameters: optionalParameters) {[weak self] result in
             if let self {
                 switch result {
                 case .success(let response):

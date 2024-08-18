@@ -14,7 +14,7 @@ class AuthenticationRequstTests: XCTestCase {
             codeChallenge: "code_challenge",
             nonce: "nonce+nonce",
             redirectUri: URL(string: "scheme:/")!,
-            responseType: .code,
+            responseTypes: [.code],
             scopes: [.address, .email, .openid, .profile],
             state: "state"
         )
@@ -53,7 +53,7 @@ class AuthenticationRequstTests: XCTestCase {
             codeChallenge: "code_challenge",
             nonce: "nonce",
             redirectUri: URL(string: "scheme:/")!,
-            responseType: .code,
+            responseTypes: [.code],
             scopes: [.address, .email, .openid, .profile],
             state: "state",
             optionalParameter: optionalParameters
@@ -97,7 +97,7 @@ class AuthenticationRequstTests: XCTestCase {
             codeChallenge: "code_challenge",
             nonce: "nonce",
             redirectUri: URL(string: "scheme:/")!,
-            responseType: .code,
+            responseTypes: [.code],
             scopes: [.address, .email, .openid, .profile],
             state: "state",
             optionalParameter: optionalParameters
@@ -158,7 +158,7 @@ class AuthenticationRequstTests: XCTestCase {
             codeChallenge: "code_challenge",
             nonce: "nonce",
             redirectUri: URL(string: "scheme:/")!,
-            responseType: .code,
+            responseTypes: [.code],
             scopes: [.address, .email, .openid, .profile],
             state: "state",
             optionalParameter: optionalParameters
@@ -190,7 +190,7 @@ class AuthenticationRequstTests: XCTestCase {
             codeChallenge: "code_challenge",
             nonce: "nonce",
             redirectUri: URL(string: "scheme:/")!,
-            responseType: .code,
+            responseTypes: [.code],
             scopes: [.address, .email, .openid, .profile],
             state: "state",
             optionalParameter: optionalParameters
@@ -234,7 +234,7 @@ class AuthenticationRequstTests: XCTestCase {
             codeChallenge: "code_challenge",
             nonce: "nonce",
             redirectUri: URL(string: "scheme:/")!,
-            responseType: .code,
+            responseTypes: [.code],
             scopes: [.address, .email, .openid, .profile],
             state: "state",
             optionalParameter: optionalParameters,

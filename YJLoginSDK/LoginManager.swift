@@ -58,6 +58,8 @@ public class LoginManager {
     /// - Parameter scopes: 要求する`Scope`の配列。`.openid`は必須。
     /// - Parameter nonce: リプレイアタック対策のパラメーター。
     /// - Parameter codeChallenge: PKCEのパラメーター。
+    /// - Parameter state: CSRF対策のパラメーター。デフォルトはランダムの文字列。
+    /// - Parameter responseTypes: レスポンスタイプ。デフォルトは`[.code]`。
     /// - Parameter optionalParameters: 認可リクエスト時に指定する任意パラメーター。
     /// - Parameter viewController: ログイン画面を表示するViewController。nilの場合は最前面のViewControllerにログイン画面を表示する。
     /// - Parameter completion: ログインアクション完了時に実行されるクロージャー。
@@ -68,11 +70,13 @@ public class LoginManager {
     public func login(
         scopes: [Scope],
         nonce: String,
-        codeChallenge: String,
+        codeChallenge: String? = nil,
+        state: String? = nil,
+        responseTypes: [ResponseType] = [.code],
         optionalParameters: OptionalParameters? = nil,
         viewController: UIViewController? = nil,
         completionHandler completion: @escaping (Result<LoginResult, LoginError>) -> Void) {
-        login(scopes: scopes, nonce: nonce, codeChallenge: codeChallenge, process: AuthenticationProcess(viewController: viewController), optionalParameters: optionalParameters, completionHandler: completion)
+            login(scopes: scopes, nonce: nonce, codeChallenge: codeChallenge, process: AuthenticationProcess(viewController: viewController, responseTypes: responseTypes), optionalParameters: optionalParameters, completionHandler: completion)
     }
 
     /// AppDelegateからアプリにログイン処理が返ってきた際に、URLの処理を制御する。
@@ -92,10 +96,16 @@ public class LoginManager {
     internal func login(
         scopes: [Scope],
         nonce: String,
-        codeChallenge: String,
+        codeChallenge: String?,
+        state: String? = nil,
+        responseTypes: [ResponseType] = [.code],
         process: AuthenticationProcessProtocol,
         optionalParameters: OptionalParameters? = nil,
         completionHandler completion: @escaping (Result<LoginResult, LoginError>) -> Void) {
+            
+        guard !responseTypes.isEmpty else {
+            fatalError("[YJLoginSDK] responseTypes must not be empty.")
+        }
 
         guard let configuration else {
             fatalError("[YJLoginSDK] Please call setup function before login.")
@@ -108,9 +118,9 @@ public class LoginManager {
             return
         }
 
-        let state =  try? SecureRandom.data(count: 32).base64urlEncodedString()
+        let state = state == nil ? try? SecureRandom.data(count: 32).base64urlEncodedString() : state
 
-        let request = AuthenticationRequest(clientId: configuration.clientId, codeChallenge: codeChallenge, nonce: nonce, redirectUri: configuration.redirectUri, responseType: .code, scopes: scopes, state: state, optionalParameter: optionalParameters, issuer: configuration.issuer)
+        let request = AuthenticationRequest(clientId: configuration.clientId, codeChallenge: codeChallenge, nonce: nonce, redirectUri: configuration.redirectUri, responseTypes: responseTypes, scopes: scopes, state: state, optionalParameter: optionalParameters, issuer: configuration.issuer)
 
         authenticationProcess = process
         authenticationProcess?.setEnableUniversalLinks(enableUniversalLinks: enableUniversalLinks)

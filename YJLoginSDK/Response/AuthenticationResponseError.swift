@@ -11,6 +11,8 @@ internal enum AuthenticationResponseError: Error {
     case userCancel
     case invalidState
     case emptyAuthorizationCode
+    case emptyIdToken
+    case emptyAccessToken
     case unexpectedError
     case undefinedError(error: String, description: String, code: Int)
     case serverError(error: Error, description: String, code: Int)

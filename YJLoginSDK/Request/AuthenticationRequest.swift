@@ -11,10 +11,10 @@ internal struct AuthenticationRequest {
 
     var path: String = Constant.authorizationPath
     let clientId: String
-    let codeChallenge: String
+    let codeChallenge: String?
     let nonce: String
     let redirectUri: URL
-    let responseType: ResponseType
+    let responseTypes: [ResponseType]
     let scopes: [Scope]
     let state: String?
     var optionalParameter: OptionalParameters?
@@ -25,11 +25,14 @@ internal struct AuthenticationRequest {
             "client_id": clientId,
             "nonce": nonce,
             "redirect_uri": redirectUri.absoluteString,
-            "response_type": responseType.rawValue,
+            "response_type": responseTypes.map { $0.rawValue }.joined(separator: " "),
             "scope": scopes.map {$0.rawValue}.joined(separator: " "),
-            "code_challenge": codeChallenge,
-            "code_challenge_method": "S256",
         ]
+        
+        if let codeChallenge {
+            parameters["code_challenge"] = codeChallenge
+            parameters["code_challenge_method"] = "S256"
+        }
 
         if let state {
             parameters["state"] = state
